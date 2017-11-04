@@ -2,24 +2,24 @@ library(shinydashboard)
 
 dashboardPage(
   dashboardHeader(title = "People Powered Protein Predictions!"),
-  dashboardSidebar(
-    sidebarMenu(
-      menuItem("Let's Play!", tabName = "game", icon = icon("dashboard")),
-      menuItem("About", tabName = "about", icon = icon("th"))
-    )
-  ),
+  dashboardSidebar(disable = TRUE),
   dashboardBody(
-    tabItems(
+    fluidRow(
       # First tab content
-      tabItem(tabName = "game",
-              includeScript("www/pv.min.js"),
-              tags$div(id = 'gl', style="width:800px; margin:0 auto;"),
-              includeScript("www/message.js")
-      ),
-      
-      # Second tab content
-      tabItem(tabName = "about",
-              h2("About the project.")
+      box(title = "Let's Play!",
+             id = "game",
+             width = 12,
+             height ="600px",
+             side = "right",
+             includeScript("www/pv.min.js"),
+             tags$div(id = 'gl', style="width:600px; margin: auto;"),
+             includeScript("www/message.js")
+      ), 
+      box(title = "Questions",
+          width = 12,
+          radioButtons("q1_answer", "Q1?", choices = 1:5, inline = TRUE),
+          radioButtons("q2_answer", "Q2?", choices = 1:5, inline = TRUE),
+          actionButton("submit", "Sumbit Your Answer", icon("refresh"))
       )
     )
   )

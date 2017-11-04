@@ -1,8 +1,8 @@
 // override the default options with something less restrictive.
 
 var options = {
-  width: 800,
-  height: 600,
+  width: 600,
+  height: 400,
   antialias: true,
 };
 // insert the viewer under the Dom element with id 'gl'.
