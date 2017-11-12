@@ -1,7 +1,8 @@
 library(shiny)
 library(shinydashboard)
-
 library(googlesheets)
+library(dplyr)
+library(readr)
 
 saveData <- function(data) {
   # Grab the Google Sheet
@@ -10,31 +11,48 @@ saveData <- function(data) {
   gs_add_row(sheet, input = data)
 }
 
+sampleData <- function(tbl) {
+  str_replace_all(as.character(sample_n(tbl, 1)[["message"]]),
+                  "www/", "")
+}
 
 fields <- c("session_id", "date_time", "q1_answer", "q2_answer")
 table <- "ppp-responses"
+pdb <- read_rds("pdb.rds")
 
 server <- function(input, output, session) {
   
-  # protein files db
-  dir <- "db/"
-  # current selection, passed to the javascript file
-  input_pdb <- paste0(dir, c("PF3D7_0608310_model1.pdb", "4k3c.pdb"),
-                      collapse = ";")
-  observe({
-    session$sendCustomMessage(type='myCallbackHandler', message = input_pdb) 
-  })
-  
+  user <- reactiveValues(count = 1, 
+                         session_id = shiny:::createUniqueId(16))
+
+  # protein files db preparation
+  input_pdb <- reactiveValues(message = sampleData(pdb))
+
   # take values from radiobutton questions
   responseData <- reactive({
     data <- data.frame(
-      session_id = shiny:::createUniqueId(16),
+      session_id = isolate(user$session_id),
       datetime = Sys.time(),
       q1_answer = input$q1_answer,
-      q2_answer = input$q2_answer
-      )
+      q2_answer = input$q2_answer,
+      subject_pdb = str_extract(isolate(input_pdb$message), "(?<=;).*"),
+      query_pdb = str_extract(isolate(input_pdb$message), ".*(?=;)")
+    )
     data
   })
+  
+  observe({
+    session$sendCustomMessage(type='myCallbackHandler', message = input_pdb$message) 
+  })
+  
+  observeEvent(input$continue, {
+    saveData(responseData())
+    input_pdb$message <- sampleData(pdb)
+    shinyjs::reset("q1_answer")
+    shinyjs::reset("q2_answer")
+    #user$count <- isolate(user$count) + 1L
+  })
+
   
   # When the submit button is clicked, save the results
   observeEvent(input$submit, {
@@ -43,7 +61,6 @@ server <- function(input, output, session) {
     session$reload()
   })
   
-                  
 }
 
 
