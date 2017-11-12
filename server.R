@@ -3,6 +3,7 @@ library(shinydashboard)
 library(googlesheets)
 library(dplyr)
 library(readr)
+library(stringr)
 
 saveData <- function(data) {
   # Grab the Google Sheet
