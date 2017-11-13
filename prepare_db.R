@@ -1,7 +1,7 @@
 library(tidyverse)
 
 path <- "www/Pf_101pdb/"
-match_list <- str_c(path, "Pf_pdbMatch_chainConcat.list")
+match_list <- str_c(path, "Pf_pdbMatch_chain.list")
 
 query_files <- list.files(str_c(path, "query_db"), 
                           full.names = TRUE)
@@ -17,10 +17,12 @@ match_subject <- function(.) {
 }
 # prepare db file
 input_files <- read_tsv(match_list,
-                        col_names = c("query", "subject"),
-                        col_types = c("cc--")) %>%
-  mutate(query_file = str_subset(query_files, query),
-         subject_file = map_chr(subject, match_subject)) 
+                        col_names = c("query", "subject", "chain"),
+                        col_types = c("ccc")) %>%
+  mutate(subject = str_c(subject, chain),
+    query_file = str_subset(query_files, query),
+         subject_file = map_chr(subject, match_subject)) %>%
+  select(-chain)
 
 pdb_input <- input_files %>%
   filter(!is.na(subject_file)) %>%
