@@ -1,12 +1,14 @@
 library(shinydashboard)
 
-response1 <- list("No match" = 1,
+response1 <- list("None selected" = 0,
+                  "No match" = 1,
                   "Poor match" = 2,
                   "Ok match" = 3,
                   "Good match" = 4,
                   "Perfect match" = 5)
 
-response2 <- list("Completely unsure" = 1,
+response2 <- list("None selected" = 0,
+                  "Completely unsure" = 1,
                   "Somewhat unsure" = 2,
                   "Neither sure or unsure" = 3,
                   "Somewhat sure" = 4,
