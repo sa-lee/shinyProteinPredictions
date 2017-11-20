@@ -12,6 +12,8 @@ function superimpose(message, viewer) {
   var query = files[0];
   var subject = files[1];
 
+  console.log('Query is ' + query);
+  console.log('Subject is ' + subject);
   var queryv = pv.io.fetchPdb(query, function(structure) {
   	viewer.cartoon('prediction', structure, { color: color.uniform('#67a9cf') });
   	viewer.centerOn(structure);

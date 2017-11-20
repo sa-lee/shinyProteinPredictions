@@ -4,6 +4,8 @@ library(googlesheets)
 library(dplyr)
 library(readr)
 library(stringr)
+library(V8)
+library(shinyjs)
 
 saveData <- function(data) {
   # Grab the Google Sheet
@@ -51,6 +53,7 @@ server <- function(input, output, session) {
     shinyjs::reset("q1_answer")
     shinyjs::reset("q2_answer")
     shinyjs::js$resetdiv()
+    print(isolate(input_pdb$message))
     input_pdb$message <- sampleData(pdb)
   })
 
