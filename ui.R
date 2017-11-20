@@ -1,5 +1,5 @@
 library(shinydashboard)
-
+library(shinyjs)
 response1 <- list("None selected" = 0,
                   "No match" = 1,
                   "Poor match" = 2,
@@ -19,7 +19,8 @@ dashboardPage(
   dashboardSidebar(disable = TRUE),
   dashboardBody(
     fluidRow(
-      shinyjs::useShinyjs(),
+      useShinyjs(),
+      extendShinyjs("www/resetdiv.js"),
       includeScript("www/pv.min.js"),
       # First tab content
       box(title = "Let's Play!",
@@ -27,8 +28,10 @@ dashboardPage(
              width = 12,
              height ="600px",
              side = "right",
-             tags$div(id = 'gl', style="width:600px; margin: auto;"),
-             includeScript("www/message.js")
+             div(id = 'gl', 
+                 style="width:600px; margin: auto;"),
+          includeScript("www/message.js")
+             
       ), 
       box(title = "How well does the predicted structure (blue) match the reference structure (orange)?",
           width = "6",

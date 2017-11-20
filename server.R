@@ -23,8 +23,7 @@ pdb <- read_rds("pdb.rds")
 
 server <- function(input, output, session) {
   
-  user <- reactiveValues(count = 1, 
-                         session_id = shiny:::createUniqueId(16))
+  user <- reactiveValues(session_id = shiny:::createUniqueId(16))
 
   # protein files db preparation
   input_pdb <- reactiveValues(message = sampleData(pdb))
@@ -43,18 +42,18 @@ server <- function(input, output, session) {
   })
   
   observe({
-    session$sendCustomMessage(type='myCallbackHandler', message = input_pdb$message) 
+    session$sendCustomMessage(type='myCallbackHandler', 
+                              message = input_pdb$message) 
   })
   
   observeEvent(input$continue, {
     saveData(responseData())
-    input_pdb$message <- sampleData(pdb)
     shinyjs::reset("q1_answer")
     shinyjs::reset("q2_answer")
-    #user$count <- isolate(user$count) + 1L
+    shinyjs::js$resetdiv()
+    input_pdb$message <- sampleData(pdb)
   })
 
-  
   # When the submit button is clicked, save the results
   observeEvent(input$submit, {
     print(isolate(responseData()))
