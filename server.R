@@ -11,7 +11,7 @@ saveData <- function(data) {
   # Grab the Google Sheet
   sheet <- gs_title(table)
   # Add the data as a new row
-  gs_add_row(sheet, input = data)
+  gs_add_row(sheet, ws = 1, input = data)
 }
 
 sampleData <- function(tbl) {
@@ -19,7 +19,7 @@ sampleData <- function(tbl) {
                   "www/", "")
 }
 
-fields <- c("session_id", "date_time", "q1_answer", "q2_answer")
+fields <- c("session_id", "name", "date_time", "q1_answer", "q2_answer")
 table <- "ppp-responses"
 pdb <- read_rds("pdb.rds")
 
@@ -34,6 +34,7 @@ server <- function(input, output, session) {
   responseData <- reactive({
     data <- data.frame(
       session_id = isolate(user$session_id),
+      name = ifelse(is.null(input$name), NA_character_, input$name),
       datetime = Sys.time(),
       q1_answer = input$q1_answer,
       q2_answer = input$q2_answer,
@@ -49,6 +50,7 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$continue, {
+    print(isolate(responseData()))
     saveData(responseData())
     shinyjs::reset("q1_answer")
     shinyjs::reset("q2_answer")

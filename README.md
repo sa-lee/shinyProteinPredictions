@@ -9,4 +9,6 @@ reference structures in _Plasmodium falciparum_.
 ```
 make install
 make serve 
+# if you want to deploy to shinyapps.io
+make deploy
 ```

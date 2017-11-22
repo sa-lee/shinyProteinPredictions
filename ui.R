@@ -33,18 +33,22 @@ dashboardPage(
           includeScript("www/message.js")
              
       ), 
-      box(title = "How well does the predicted structure (blue) match the reference structure (orange)?",
+      box(title = "How well does the predicted structure (blue) match the reference structure (orange)? (0 is no match, 100 is perfect match)",
           width = "6",
-          radioButtons("q1_answer", "", choices = response1 , width = "100%", inline = TRUE)
+          sliderInput("q1_answer", NULL, 0, 100, 50)
       ),
-      box(title =  "How confident are you in your prediction?",
+      box(title =  "How confident are you in your prediction? (0 is completely unsure, 100 is completely certain)",
           width = "6",
-          radioButtons("q2_answer", "", choices = response2 , inline = TRUE)
+          sliderInput("q2_answer", NULL, 0, 100, 50)
       ),
       box(title = "Try Again?",
           width = "12", 
       actionButton("continue", "Keep Playing", icon("play")),
-      actionButton("submit", "Finished?", icon("refresh"))
+      actionButton("form", "Finished?", icon("refresh")),
+      conditionalPanel("input.form", 
+                       textInput("name", "What's your name?"),
+                       actionButton("submit", "Submit", icon("archive"))
+                       )
       )
     )
   )
