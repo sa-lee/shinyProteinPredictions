@@ -9,9 +9,14 @@ library(shinyjs)
 
 saveData <- function(data) {
   # Grab the Google Sheet
-  sheet <- gs_title(table)
+  #sheet <- gs_title(table)
   # Add the data as a new row
-  gs_add_row(sheet, ws = 1, input = data)
+  #gs_add_row(sheet, ws = 1, input = data)
+  tryCatch(readr::write_tsv(data, table, append = TRUE),
+           error = function(e) e,
+           finally = message("unable to write to file, use logs instead.")
+  )
+          
 }
 
 sampleData <- function(tbl) {
@@ -20,7 +25,7 @@ sampleData <- function(tbl) {
 }
 
 fields <- c("session_id", "name", "date_time", "q1_answer", "q2_answer")
-table <- "ppp-responses"
+table <- "ppp-responses.txt"
 pdb <- read_rds("pdb.rds")
 
 server <- function(input, output, session) {
@@ -32,7 +37,7 @@ server <- function(input, output, session) {
 
   # take values from radiobutton questions
   responseData <- reactive({
-    data <- data.frame(
+    data <- tibble(
       session_id = isolate(user$session_id),
       name = ifelse(is.null(input$name), NA_character_, input$name),
       datetime = Sys.time(),
@@ -50,19 +55,25 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$continue, {
-    print(isolate(responseData()))
+    cat(">\n",
+        str_c(isolate(responseData())[1,], collapse = "\t"),
+        "\n>\n" 
+    )
     saveData(responseData())
     shinyjs::reset("q1_answer")
     shinyjs::reset("q2_answer")
     shinyjs::js$resetdiv()
-    print(isolate(input_pdb$message))
     input_pdb$message <- sampleData(pdb)
   })
 
   # When the submit button is clicked, save the results
   observeEvent(input$submit, {
-    print(isolate(responseData()))
+    cat(">\n",
+        str_c(isolate(responseData())[1,], collapse = "\t"),
+        "\n>\n" 
+    )
     saveData(responseData())
+    cat("Game finished!\n")
     session$reload()
   })
   

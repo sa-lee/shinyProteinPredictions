@@ -3,12 +3,16 @@ library(tidyverse)
 path <- "www/Pf_101pdb/"
 match_list <- str_c(path, "Pf_pdbMatch_chain.list")
 
-query_files <- list.files(str_c(path, "query_db"), 
-                          full.names = TRUE)
-subject_files <- list.files(str_c(path, "subject_db"),
-                            full.names = TRUE)
-match_subject <- function(.) {
-  x <- str_subset(subject_files, .)
+# we use the pre-aligned structures from Chimera
+# constructed by B.Ansell
+query_files <- list.files(str_c(path, "queryAlign"), 
+                          full.names = TRUE,
+                          pattern = "model1_Align.pdb$")
+subject_files <- list.files(str_c(path, "subjectAlign"),
+                            full.names = TRUE,
+                            pattern = "_Align.pdb$")
+match_files <- function(., files) {
+  x <- str_subset(files, .)
   if (length(x) > 0) {
     return(x)
   } else {
@@ -20,8 +24,8 @@ input_files <- read_tsv(match_list,
                         col_names = c("query", "subject", "chain"),
                         col_types = c("ccc")) %>%
   mutate(subject = str_c(subject, chain),
-    query_file = str_subset(query_files, query),
-         subject_file = map_chr(subject, match_subject)) %>%
+         query_file = map_chr(query, ~match_files(., files = query_files)),
+         subject_file = map_chr(subject, ~match_files(., files = subject_files))) %>%
   select(-chain)
 
 pdb_input <- input_files %>%

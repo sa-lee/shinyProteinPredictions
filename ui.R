@@ -33,13 +33,13 @@ dashboardPage(
           includeScript("www/message.js")
              
       ), 
-      box(title = "How well does the predicted structure (blue) match the reference structure (orange)? (0 is no match, 100 is perfect match)",
+      box(title = "On a scale of 0-100, how well does the predicted structure (blue) match the reference structure (orange)?",
           width = "6",
-          sliderInput("q1_answer", NULL, 0, 100, 50)
+          sliderInput("q1_answer", "0 means you think there is no match. 100 means you think there is a perfect match.", 0, 100, 50)
       ),
-      box(title =  "How confident are you in your prediction? (0 is completely unsure, 100 is completely certain)",
+      box(title =  "On a scale of 0-100, how confident are you in your prediction? ",
           width = "6",
-          sliderInput("q2_answer", NULL, 0, 100, 50)
+          sliderInput("q2_answer", "0 means you are completely unsure. 100 means you are completely certain.", 0, 100, 50)
       ),
       box(title = "Try Again?",
           width = "12", 
