@@ -12,11 +12,7 @@ saveData <- function(data) {
   #sheet <- gs_title(table)
   # Add the data as a new row
   #gs_add_row(sheet, ws = 1, input = data)
-  tryCatch(readr::write_tsv(data, table, append = TRUE),
-           error = function(e) e,
-           finally = message("unable to write to file, use logs instead.")
-  )
-          
+ readr::write_tsv(data, table, append = TRUE)
 }
 
 sampleData <- function(tbl) {
@@ -59,7 +55,9 @@ server <- function(input, output, session) {
         str_c(isolate(responseData())[1,], collapse = "\t"),
         "\n>\n" 
     )
-    saveData(responseData())
+    tryCatch(saveData(responseData()),
+             error = function(e) print(e)
+    )
     shinyjs::reset("q1_answer")
     shinyjs::reset("q2_answer")
     shinyjs::js$resetdiv()
@@ -72,7 +70,9 @@ server <- function(input, output, session) {
         str_c(isolate(responseData())[1,], collapse = "\t"),
         "\n>\n" 
     )
-    saveData(responseData())
+    tryCatch(saveData(responseData()),
+             error = function(e) print(e)
+    )
     cat("Game finished!\n")
     session$reload()
   })
