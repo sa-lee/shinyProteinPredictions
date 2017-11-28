@@ -7,12 +7,6 @@ response1 <- list("None selected" = 0,
                   "Good match" = 4,
                   "Perfect match" = 5)
 
-response2 <- list("None selected" = 0,
-                  "Completely unsure" = 1,
-                  "Somewhat unsure" = 2,
-                  "Neither sure or unsure" = 3,
-                  "Somewhat sure" = 4,
-                  "Completely sure" = 5)
 dashboardPage(
   dashboardHeader(title = "People Powered Protein Predictions!",
                   titleWidth = "600px"),
@@ -33,16 +27,18 @@ dashboardPage(
           includeScript("www/message.js")
              
       ), 
-      box(title = "On a scale of 0-100, how well does the predicted structure (blue) match the reference structure (orange)?",
+      box(title = "How well does the predicted structure (blue) match the reference structure (orange)?",
           width = "6",
-          sliderInput("q1_answer", "0 means you think there is no match. 100 means you think there is a perfect match.", 0, 100, 50)
+          radioButtons("q1_answer", "", choices = response1 , width = "100%", inline = TRUE)
       ),
       box(title =  "On a scale of 0-100, how confident are you in your prediction? ",
           width = "6",
           sliderInput("q2_answer", "0 means you are completely unsure. 100 means you are completely certain.", 0, 100, 50)
       ),
       box(title = "Try Again?",
-          width = "12", 
+          width = "12",
+      textOutput("times_played"),
+      br(),
       actionButton("continue", "Keep Playing", icon("play")),
       actionButton("form", "Finished?", icon("refresh")),
       conditionalPanel("input.form", 
