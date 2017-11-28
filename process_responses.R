@@ -23,5 +23,6 @@ dat_by_name <- dat %>%
   distinct()
 
 
-write_tsv(dat_by_name, path = paste0(format(Sys.time(), "%Y-%m-%d-%H:%M:%S"),
+write_tsv(dat_by_name, 
+          path = paste0(format(Sys.time(), "%Y-%m-%d-%H:%M:%S"),
                                      "_clean-responses.txt"))
