@@ -19,10 +19,32 @@ by_name <- dat %>%
 # join by name, filter any lagged response which cause duplicate records
 dat_by_name <- dat %>%
   select(-name) %>%
-  left_join(by_name, by = "session_id") %>%
+  inner_join(by_name, by = "session_id") %>%
   distinct()
 
+process_scores <- function(dat) {
+  # filter non-response
+  dat <- dat %>%
+    filter(!is.na(q1_answer))
+  # for each protein take the mode
+  modes <- dat %>%
+    count(subject_pdb, q1_answer) %>%
+    group_by(subject_pdb) %>%
+    filter(n == max(n)) %>%
+    select(subject_pdb, mode_answer = q1_answer)
+  # for each response calculate the distance between the rating and 
+  # the mode of that protein
+  scores <- left_join(dat, modes, by = "subject_pdb") %>%
+    mutate(score = abs(mode_answer - q1_answer))
+  # as a final score for each subject take the average/median distance 
+  # across all proteins he/she rated (lower the better)
+  scores %>% 
+    group_by(name) %>% 
+    # filter( n() >= 15 ) %>%
+    summarise(final_score = mean(score), n = n()) %>%
+    arrange(final_score)
+}
 
-write_tsv(dat_by_name, 
-          path = paste0(format(Sys.time(), "%Y-%m-%d-%H:%M:%S"),
-                                     "_clean-responses.txt"))
+# write_tsv(dat_by_name, 
+#           path = paste0(format(Sys.time(), "%Y-%m-%d-%H:%M:%S"),
+#                                      "_clean-responses.txt"))
